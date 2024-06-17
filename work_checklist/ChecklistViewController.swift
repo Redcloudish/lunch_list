@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ChecklistViewController: UITableViewController, AddItemViewControllerDelegate {
+class ChecklistViewController: UITableViewController, itemDetailViewContrillerDelegate {
     var items = [ChecklistItem]()
 
     override func viewDidLoad() {
@@ -20,12 +20,10 @@ class ChecklistViewController: UITableViewController, AddItemViewControllerDeleg
 
         let item2 = ChecklistItem()
         item2.text = "Strawberry splash"
-        
         items.append(item2)
 
         let item3 = ChecklistItem()
         item3.text = "Iced Coffee"
-        item3.checked = true
         items.append(item3)
 
         let item4 = ChecklistItem()
@@ -36,16 +34,16 @@ class ChecklistViewController: UITableViewController, AddItemViewControllerDeleg
         item5.text = "Pack of Timbits"
         items.append(item5)
 
-        // Turn off large titles
+        // Turn on large titles
         navigationController?.navigationBar.prefersLargeTitles = true
     }
 
     // MARK: - Add Item ViewController Delegates
-    func addItemViewControllerDidCancel(_ controller: AddItemViewController) {
+    func itemDetailViewContrillerDidCancel(_ controller: ItemDetailViewController) {
         navigationController?.popViewController(animated: true)
     }
 
-    func addItemViewController(_ controller: AddItemViewController, didFinishAdding item: ChecklistItem) {
+    func itemDetailViewContriller(_ controller: ItemDetailViewController, didFinishAdding item: ChecklistItem) {
         let newRowIndex = items.count
         items.append(item)
 
@@ -55,11 +53,28 @@ class ChecklistViewController: UITableViewController, AddItemViewControllerDeleg
         navigationController?.popViewController(animated: true)
     }
 
+    func itemDetailViewContriller(_ controller: ItemDetailViewController, didFinishEditing item: ChecklistItem) {
+        if let index = items.firstIndex(of: item) {
+            let indexPath = IndexPath(row: index, section: 0)
+            if let cell = tableView.cellForRow(at: indexPath) {
+                configureText(for: cell, with: item)
+            }
+        }
+        navigationController?.popViewController(animated: true)
+    }
+
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "AddItem" {
-            let controller = segue.destination as! AddItemViewController
+            let controller = segue.destination as! ItemDetailViewController
             controller.delegate = self
+        } else if segue.identifier == "EditItem" {
+            let controller = segue.destination as! ItemDetailViewController
+            controller.delegate = self
+
+            if let indexPath = tableView.indexPath(for: sender as! UITableViewCell) {
+                controller.itemToEdit = items[indexPath.row]
+            }
         }
     }
 
@@ -78,6 +93,15 @@ class ChecklistViewController: UITableViewController, AddItemViewControllerDeleg
         return cell
     }
 
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) {
+            let item = items[indexPath.row]
+            item.checked.toggle()
+            configureCheckmark(for: cell, with: item)
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             items.remove(at: indexPath.row)
@@ -88,10 +112,12 @@ class ChecklistViewController: UITableViewController, AddItemViewControllerDeleg
 
     // MARK: - Helper Methods
     func configureCheckmark(for cell: UITableViewCell, with item: ChecklistItem) {
+        let label = cell.viewWithTag(1001) as! UILabel
+
         if item.checked {
-            cell.accessoryType = .checkmark
+            label.text = "√"
         } else {
-            cell.accessoryType = .none
+            label.text = ""
         }
     }
 
