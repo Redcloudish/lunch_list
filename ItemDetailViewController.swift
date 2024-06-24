@@ -1,13 +1,13 @@
 import UIKit
 
-protocol itemDetailViewContrillerDelegate: AnyObject {
-  func itemDetailViewContrillerDidCancel(
+protocol itemDetailViewControllerDelegate: AnyObject {
+  func itemDetailViewControllerDidCancel(
     _ controller: ItemDetailViewController)
-  func itemDetailViewContriller(
+  func itemDetailViewController(
     _ controller: ItemDetailViewController,
     didFinishAdding item: ChecklistItem
   )
-  func itemDetailViewContriller(
+  func itemDetailViewController(
     _ controller: ItemDetailViewController,
     didFinishEditing item: ChecklistItem
   )
@@ -18,7 +18,7 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     @IBOutlet weak var doneBarButton: UIBarButtonItem!
     @IBOutlet weak var textField: UITextField!
     
-    weak var delegate: itemDetailViewContrillerDelegate?
+    weak var delegate: itemDetailViewControllerDelegate?
     var itemToEdit: ChecklistItem? // Add this property
 
     override func viewDidLoad() {
@@ -32,19 +32,19 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     }
     // MARK: - Actions
     @IBAction func cancel() {
-        delegate?.itemDetailViewContrillerDidCancel(self)
+        delegate?.itemDetailViewControllerDidCancel(self)
     }
     
     @IBAction func done() {
       if let item = itemToEdit {
         item.text = textField.text!
-        delegate?.itemDetailViewContriller(
+        delegate?.itemDetailViewController(
           self,
           didFinishEditing: item)
       } else {
         let item = ChecklistItem()
         item.text = textField.text!
-        delegate?.itemDetailViewContriller(self, didFinishAdding: item)
+        delegate?.itemDetailViewController(self, didFinishAdding: item)
       }
     }
     
