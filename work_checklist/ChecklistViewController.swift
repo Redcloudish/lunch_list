@@ -12,7 +12,7 @@ class ChecklistViewController: UITableViewController, itemDetailViewControllerDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationController?.navigationBar.prefersLargeTitles = true
         // Add the initial checklist items
         let item1 = ChecklistItem()
         item1.text = "Chilly soup"
@@ -35,10 +35,9 @@ class ChecklistViewController: UITableViewController, itemDetailViewControllerDe
         items.append(item5)
         
         // Turn on large titles
-        navigationController?.navigationBar.prefersLargeTitles = true
         
-        print("Documents folder is \(documentsDirectory())")
-        print("Data file path is \(dataFilePath())")
+        
+       
     }
     
     // MARK: - Add Item ViewController Delegates
@@ -54,6 +53,7 @@ class ChecklistViewController: UITableViewController, itemDetailViewControllerDe
         let indexPaths = [indexPath]
         tableView.insertRows(at: indexPaths, with: .automatic)
         navigationController?.popViewController(animated: true)
+        saveChecklistItems()
     }
     
     func itemDetailViewController(_ controller: ItemDetailViewController, didFinishEditing item: ChecklistItem) {
@@ -64,6 +64,7 @@ class ChecklistViewController: UITableViewController, itemDetailViewControllerDe
             }
         }
         navigationController?.popViewController(animated: true)
+        saveChecklistItems()
     }
     
     // MARK: - Navigation
@@ -103,6 +104,7 @@ class ChecklistViewController: UITableViewController, itemDetailViewControllerDe
             configureCheckmark(for: cell, with: item)
         }
         tableView.deselectRow(at: indexPath, animated: true)
+        saveChecklistItems()
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -110,6 +112,7 @@ class ChecklistViewController: UITableViewController, itemDetailViewControllerDe
             items.remove(at: indexPath.row)
             let indexPaths = [indexPath]
             tableView.deleteRows(at: indexPaths, with: .automatic)
+            saveChecklistItems()
         }
     }
     
